@@ -49,10 +49,10 @@ defmodule Max31865.Registers.ConfigRegister do
   """
 
   alias Circuits.SPI
+  import Max31865.Registers.Helpers
 
   @read_register <<0x00>>
   @write_register <<0x80>>
-
 
   defstruct vbias: 0,
             conversion_mode: 0,
@@ -63,20 +63,21 @@ defmodule Max31865.Registers.ConfigRegister do
             fault_clear: 0,
             filter_select: 0
 
-  @doc"""
+  @doc """
   Accepts a Max31865 SPI reference and reads the Config Register, then returns a ConfigRegister struct representing it's contents.
   """
   def read(max_ref) do
-    {:ok, <<@read_register, bits>>} = SPI.transfer(max_ref, <<@read_register::binary, 0x00>>)
+    resp = xfer(max_ref, <<@read_register::binary, 0x00>>)
+    <<@read_register, bits>> = resp
     to_struct(<<bits>>)
   end
 
-  @doc"""
+  @doc """
   Accepts a ConfigRegister struct and a Max31865 SPI reference and writes it to the ConfigRegister.
   """
   def write(%__MODULE__{} = config, max_ref) do
-    {:ok, response} = SPI.transfer(max_ref, <<@write_register::binary, to_bits(config)::binary>>)
-    response
+    _resp = xfer(max_ref, <<@write_register::binary, to_bits(config)::binary>>)
+    :ok
   end
 
   defp to_bits(%__MODULE__{} = config) do
@@ -93,27 +94,26 @@ defmodule Max31865.Registers.ConfigRegister do
   end
 
   defp to_struct(<<_::size(8)>> = bits) do
-      <<
-        vbias::size(1),
-        conversion_mode::size(1),
-        one_shot::size(1),
-        three_wire::size(1),
-        fault_one::size(1),
-        fault_two::size(1),
-        fault_clear::size(1),
-        filter_select::size(1)
-      >> = bits
+    <<
+      vbias::size(1),
+      conversion_mode::size(1),
+      one_shot::size(1),
+      three_wire::size(1),
+      fault_one::size(1),
+      fault_two::size(1),
+      fault_clear::size(1),
+      filter_select::size(1)
+    >> = bits
 
-      struct(__MODULE__, [
-        vbias: vbias,
-        conversion_mode: conversion_mode,
-        one_shot: one_shot,
-        three_wire: three_wire,
-        fault_one: fault_one,
-        fault_two: fault_two,
-        fault_clear: fault_clear,
-        filter_select: filter_select
-      ])
+    struct(__MODULE__,
+      vbias: vbias,
+      conversion_mode: conversion_mode,
+      one_shot: one_shot,
+      three_wire: three_wire,
+      fault_one: fault_one,
+      fault_two: fault_two,
+      fault_clear: fault_clear,
+      filter_select: filter_select
+    )
   end
-
 end
