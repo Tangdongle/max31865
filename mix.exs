@@ -4,7 +4,7 @@ defmodule Max31865.MixProject do
   def project do
     [
       app: :max31865,
-      version: "0.2.0",
+      version: "0.2.1",
       elixir: "~> 1.19",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
