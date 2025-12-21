@@ -1,4 +1,4 @@
-defmodule Max31865.SimDevice do
+defmodule Max31865SimDevice do
   @moduledoc """
   CircuitsSim SPI device emulating the small subset of MAX31865 behavior
 
@@ -56,7 +56,7 @@ defmodule Max31865.SimDevice do
     alias Max31865
 
     @impl SPIDevice
-    def transfer(%Max31865.SimDevice{} = state, data) when is_binary(data) do
+    def transfer(%Max31865SimDevice{} = state, data) when is_binary(data) do
       case data do
         # Config register read: library sends <<0x00, 0x00>>
         <<0x00, _dummy>> ->
@@ -114,9 +114,9 @@ defmodule Max31865.SimDevice do
   end
 
   defimpl String.Chars do
-    alias Max31865.SimDevice
+    alias Max31865SimDevice
 
-    def to_string(%SimDevice{} = state) do
+    def to_string(%Max31865SimDevice{} = state) do
       [
         "MAX31865 (sim)\n",
         "  config: 0x",
